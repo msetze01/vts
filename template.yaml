@@ -1,0 +1,90 @@
+AWSTemplateFormatVersion : "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Virtual Transaction Statement API Gateway
+
+Resources:
+  VTSApiGateway: 
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      DefinitionUri: ./swagger.yaml
+  GetCardFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: GetCardFunction
+      Timeout: 60
+      Role: arn:aws:iam::679586578589:role/VTSLambdaExecutionRole
+      Runtime: python3.9
+      Handler: app.handlers.getCard.handler
+      CodeUri: src/
+      Events:
+        GetCardApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref "VTSApiGateway"
+            Path: /cards/{cardId}
+            Method: GET
+  GetAllCardsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: GetAllCardsFunction
+      Timeout: 60
+      Role: arn:aws:iam::679586578589:role/VTSLambdaExecutionRole
+      Runtime: python3.9
+      Handler: app.handlers.getAllCards.handler
+      CodeUri: src/
+      Events:
+        GetAllCardsApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref "VTSApiGateway"
+            Path: /cards
+            Method: GET
+  GetActiveCardsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: GetActiveCardsFunction
+      Timeout: 60
+      Role: arn:aws:iam::679586578589:role/VTSLambdaExecutionRole
+      Runtime: python3.9
+      Handler: app.handlers.getActiveCards.handler
+      CodeUri: src/
+      Events:
+        GetAllCardsApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref "VTSApiGateway"
+            Path: /cards/active
+            Method: GET
+  GetCardTransactionsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: GetCardTransactionsFunction
+      Timeout: 60
+      Role: arn:aws:iam::679586578589:role/VTSLambdaExecutionRole
+      Runtime: python3.9
+      Handler: app.handlers.getCardTransactions.handler
+      CodeUri: src/
+      Events:
+        GetAllCardsApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref "VTSApiGateway"
+            Path: /cards/{cardId}/transactions
+            Method: GET
+  GetTransactionsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: GetTransactionsFunction
+      Timeout: 60
+      Role: arn:aws:iam::679586578589:role/VTSLambdaExecutionRole
+      Runtime: python3.9
+      Handler: app.handlers.getTransactions.handler
+      CodeUri: src/
+      Events:
+        GetAllCardsApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref "VTSApiGateway"
+            Path: /transactions
+            Method: GET

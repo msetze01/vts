@@ -1,0 +1,6 @@
+*.DS_Store
+package.yaml
+.vscode
+.aws-sam
+__pycache__
+.pytest_cache

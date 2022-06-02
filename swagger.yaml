@@ -1,0 +1,222 @@
+swagger: "2.0"
+info:
+  title: VTS API
+  version: "1"
+  description: Simple API service definition for interacting with Extend vCards.
+  contact:
+    name: Mark Setzer
+    url: https://github.com/msetze01/vts
+    email: mark@setz.org
+servers:
+  - url: http://localhost:3000
+    description: Local environment running in SAM
+schemes:
+- "https"
+paths:
+  /cards:
+    get:
+      operationId: getAllCards
+      summary: List all vCards 
+      description: Returns a list of all registered vCards for the current user.
+      parameters:
+      - name: token
+        in: header
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Cards in a list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/definitions/card"
+        401:
+          description: Unauthorized (invalid token)
+          content:
+            text/plain:
+              schema:
+                $ref: "#/definitions/StringResponse" #workaround for API GW   
+      x-amazon-apigateway-request-validators:
+        basic:
+          validateRequestParameters: true
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "2.0"
+        type: "aws_proxy"
+        httpMethod: "POST"
+        connectionType: "INTERNET"
+        uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:679586578589:function:GetAllCardsFunction/invocations"
+  /cards/{cardId}:
+    get:
+      operationId: getCard
+      summary: Fetch one card by card ID
+      description: Get the data relating to one card
+      parameters:
+      - name: cardId
+        in: path
+        required: true
+        type: string
+      - name: token
+        in: header
+        required: true
+        type: string
+      responses:
+        200:
+          description: One card
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/card"
+        401:
+          description: Unauthorized (invalid token)
+          content:
+            text/plain:
+              schema:
+                $ref: "#/definitions/StringResponse" #workaround for API GW 
+      x-amazon-apigateway-request-validators:
+        basic:
+          validateRequestParameters: true
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "2.0"
+        type: "aws_proxy"
+        httpMethod: "POST"
+        connectionType: "INTERNET"
+        uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:679586578589:function:GetCardFunction/invocations"
+  /cards/active:
+    get:
+      operationId: getActiveCards
+      summary: List active vCards
+      description: Returns a list of registered, active vCards for the current user.  
+      parameters:
+      - name: token
+        in: header
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Cards in a list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/definitions/card"
+        401:
+          description: Unauthorized (invalid token)
+          content:
+            text/plain:
+              schema:
+                $ref: "#/definitions/StringResponse" #workaround for API GW 
+      x-amazon-apigateway-request-validators:
+        basic:
+          validateRequestParameters: true
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "2.0"
+        type: "aws_proxy"
+        httpMethod: "POST"
+        connectionType: "INTERNET"
+        uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:679586578589:function:GetActiveCardsFunction/invocations"
+  /cards/{cardId}/transactions:
+    get:
+      operationId: getCardTransactions
+      summary: List transactions for a vCard
+      description: Returns a list of transactions for a vCard.
+      parameters:
+      - name: token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: cardId
+        in: path
+        required: true
+        schema: 
+          type: string
+      responses: 
+        200: 
+          description: Transactions in a list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/definitions/transaction"
+        401:
+          description: Unauthorized (invalid token)
+          content:
+            text/plain:
+              schema:
+                $ref: "#/definitions/StringResponse" #workaround for API GW 
+      x-amazon-apigateway-request-validators:
+        basic:
+          validateRequestParameters: true
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "2.0"
+        type: "aws_proxy"
+        httpMethod: "POST"
+        connectionType: "INTERNET"
+        uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:679586578589:function:GetCardTransactionsFunction/invocations"
+  /transactions:
+    get: 
+      operationId: getTransactions
+      summary: List transactions for a user
+      description: Returns a list of transactions for the logged in user.
+      parameters:
+      - name: token
+        in: header
+        required: true
+        schema:
+          type: string
+      responses: 
+        '200': 
+          description: Transactions in a list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/definitions/transaction"
+        '401':
+          description: Unauthorized (invalid token)
+          content:
+            text/plain:
+              schema:
+                $ref: "#/definitions/StringResponse" #workaround for API GW 
+      x-amazon-apigateway-request-validators:
+        basic:
+          validateRequestParameters: true
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "2.0"
+        type: "aws_proxy"
+        httpMethod: "POST"
+        connectionType: "INTERNET"
+        uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:679586578589:function:GetTransactionsFunction/invocations"
+
+definitions:
+  StringResponse:
+    type: string
+  card:
+    type: object
+    properties: 
+      id:
+        type: string
+        description: unique identifier for card
+      name:
+        type: string
+        description: cardholder name
+      credit: 
+        type: number
+        description: available credit
+      expiry:
+        type: string
+        description: expiration date
+  transaction:
+    type: object
+    properties:
+      id:
+        type: string
+        description: unique identifier for transaction
+      
