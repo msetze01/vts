@@ -24,7 +24,7 @@ class VTSServiceTestCase(TestCase):
 
         # ConfigClient mock
         self.mock_config = ConfigClient()
-        self.mock_config._get_extend_pw = MagicMock()
+        self.mock_config.get_extend_pw = MagicMock()
 
         # API client mock
         self.mock_api = ExtendApiClient()
@@ -52,7 +52,7 @@ class VTSServiceTestCase(TestCase):
         # Assert
         assert self.mock_api.signin.call_count == 1
         assert self.mock_cache.insert.call_count == 1
-        assert self.mock_config._get_extend_pw.call_count == 1
+        assert self.mock_config.get_extend_pw.call_count == 1
 
     def test_refreshtokens_when_called_with_cached_token_assigns_tokens(self):
         # Arrange
@@ -66,7 +66,7 @@ class VTSServiceTestCase(TestCase):
         # Assert
         assert self.mock_cache.get.call_count == 1
         assert self.mock_cache.insert.call_count == 0
-        assert self.mock_config._get_extend_pw.call_count == 0
+        assert self.mock_config.get_extend_pw.call_count == 0
         assert self.mock_api.signin.call_count == 0
         assert service._refreshtoken == 'refreshToken'
         assert service._signintoken == 'token'

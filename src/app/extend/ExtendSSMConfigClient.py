@@ -9,6 +9,6 @@ class ExtendSSMConfigClient(ConfigClient):
         self._client = boto3.client('ssm', region_name='us-east-1')
 
 
-    def _get_extend_pw(self):
+    def get_extend_pw(self):
         response = self._client.get_parameter(Name=extend_pw_parameter_name)
         return response['Parameter']['Value']

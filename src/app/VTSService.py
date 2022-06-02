@@ -19,7 +19,7 @@ class VTSService:
         email = self._request.token # from our APIG, token header value is our cache key
         (self._signintoken, self._refreshtoken) = self._cache.get(email)
         if self._signintoken is None:
-            pw = self._config._get_extend_pw()
+            pw = self._config.get_extend_pw()
             response = self._client.signin(email, pw)
             self._signintoken = response.token
             self._refreshtoken = response.refreshToken
