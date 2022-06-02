@@ -20,7 +20,6 @@ class ExtendApiClient:
         """
         url = '/signin'
         data = json.dumps({ 'email': email, 'password': password })
-        data = '{"email":"mark@setz.org","password":"w3qBsd2EANRDCWL"}'
         return self._call_api(url, ExtendApiSigninResult, data)
 
 
